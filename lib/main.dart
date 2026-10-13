@@ -30,8 +30,16 @@ class Item {
   String name;
   bool bought;
   int quantity;
+  String note;
+  String category;
 
-  Item({required this.name, this.bought = false, this.quantity = 1});
+  Item({
+    required this.name,
+    this.bought = false,
+    this.quantity = 1,
+    this.note = '',
+    this.category = 'Food',
+  });
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
@@ -229,6 +237,23 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                 color: item.bought ? Colors.grey : null,
                               ),
                             ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item.category),
+                                if (item.note.isNotEmpty) Text(item.note),
+                              ],
+                            ),
+                            onLongPress: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailsScreen(item: item),
+                                ),
+                              ).then((_) {
+                                setState(() {});
+                              });
+                            },
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -252,6 +277,127 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class DetailsScreen extends StatefulWidget {
+  final Item item;
+
+  const DetailsScreen({super.key, required this.item});
+
+  @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  late TextEditingController _nameController;
+  late TextEditingController _noteController;
+  String _category = 'Food';
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.item.name);
+    _noteController = TextEditingController(text: widget.item.note);
+    _category = widget.item.category;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name cannot be empty')),
+      );
+      return;
+    }
+
+    setState(() {
+      widget.item.name = name;
+      widget.item.note = _noteController.text.trim();
+      widget.item.category = _category;
+    });
+
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Item details'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _noteController,
+              decoration: const InputDecoration(
+                labelText: 'Note',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Category', style: TextStyle(fontSize: 16)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ChoiceChip(
+                  label: const Text('Food'),
+                  selected: _category == 'Food',
+                  onSelected: (_) {
+                    setState(() {
+                      _category = 'Food';
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('Drinks'),
+                  selected: _category == 'Drinks',
+                  onSelected: (_) {
+                    setState(() {
+                      _category = 'Drinks';
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('Home'),
+                  selected: _category == 'Home',
+                  onSelected: (_) {
+                    setState(() {
+                      _category = 'Home';
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _save,
+              child: const Text('Save'),
+            ),
+          ],
+        ),
       ),
     );
   }
