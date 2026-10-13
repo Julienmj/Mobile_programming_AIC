@@ -41,6 +41,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     Item(name: 'Bread'),
     Item(name: 'Rice'),
   ];
+  String _filter = 'All';
 
   @override
   void dispose() {
@@ -71,9 +72,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   void _deleteItem(int index) {
     final item = _items[index];
-    final position = index;
+    final position = _items.indexOf(item);
     setState(() {
-      _items.removeAt(index);
+      _items.remove(item);
     });
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -112,8 +113,24 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     }
   }
 
+  List<Item> get _filteredItems {
+    final notBought = _items.where((item) => !item.bought).toList();
+    final bought = _items.where((item) => item.bought).toList();
+
+    switch (_filter) {
+      case 'To buy':
+        return notBought;
+      case 'Bought':
+        return bought;
+      default:
+        return [...notBought, ...bought];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final shown = _filteredItems;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -142,6 +159,42 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                ChoiceChip(
+                  label: const Text('All'),
+                  selected: _filter == 'All',
+                  onSelected: (_) {
+                    setState(() {
+                      _filter = 'All';
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('To buy'),
+                  selected: _filter == 'To buy',
+                  onSelected: (_) {
+                    setState(() {
+                      _filter = 'To buy';
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('Bought'),
+                  selected: _filter == 'Bought',
+                  onSelected: (_) {
+                    setState(() {
+                      _filter = 'Bought';
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: _items.isEmpty
                 ? const Center(
@@ -150,45 +203,53 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       style: TextStyle(fontSize: 18, color: Colors.grey),
                     ),
                   )
-                : ListView.builder(
-                    itemCount: _items.length,
-                    itemBuilder: (context, index) {
-                      final item = _items[index];
-                      return ListTile(
-                        leading: Checkbox(
-                          value: item.bought,
-                          onChanged: (_) => _toggleBought(index),
+                : shown.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'Nothing here',
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
-                        title: Text(
-                          item.name,
-                          style: TextStyle(
-                            decoration: item.bought
-                                ? TextDecoration.lineThrough
-                                : null,
-                            color: item.bought ? Colors.grey : null,
-                          ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: () => _decrementQuantity(index),
+                      )
+                    : ListView.builder(
+                        itemCount: shown.length,
+                        itemBuilder: (context, index) {
+                          final item = shown[index];
+                          final itemIndex = _items.indexOf(item);
+                          return ListTile(
+                            leading: Checkbox(
+                              value: item.bought,
+                              onChanged: (_) => _toggleBought(itemIndex),
                             ),
-                            Text('${item.quantity}'),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: () => _incrementQuantity(index),
+                            title: Text(
+                              item.name,
+                              style: TextStyle(
+                                decoration: item.bought
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: item.bought ? Colors.grey : null,
+                              ),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () => _deleteItem(index),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove),
+                                  onPressed: () => _decrementQuantity(itemIndex),
+                                ),
+                                Text('${item.quantity}'),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () => _incrementQuantity(itemIndex),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () => _deleteItem(itemIndex),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
