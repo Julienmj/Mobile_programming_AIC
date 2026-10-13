@@ -100,31 +100,38 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _items.length,
-              itemBuilder: (context, index) {
-                final item = _items[index];
-                return ListTile(
-                  leading: Checkbox(
-                    value: item.bought,
-                    onChanged: (_) => _toggleBought(index),
-                  ),
-                  title: Text(
-                    item.name,
-                    style: TextStyle(
-                      decoration: item.bought
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: item.bought ? Colors.grey : null,
+            child: _items.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Your list is empty',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
                     ),
+                  )
+                : ListView.builder(
+                    itemCount: _items.length,
+                    itemBuilder: (context, index) {
+                      final item = _items[index];
+                      return ListTile(
+                        leading: Checkbox(
+                          value: item.bought,
+                          onChanged: (_) => _toggleBought(index),
+                        ),
+                        title: Text(
+                          item.name,
+                          style: TextStyle(
+                            decoration: item.bought
+                                ? TextDecoration.lineThrough
+                                : null,
+                            color: item.bought ? Colors.grey : null,
+                          ),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteItem(index),
+                        ),
+                      );
+                    },
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteItem(index),
-                  ),
-                );
-              },
-            ),
           ),
         ],
       ),
