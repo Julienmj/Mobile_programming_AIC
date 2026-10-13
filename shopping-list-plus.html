@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping List Plus</title>
+<style>
+  :root {
+    --blue: #0468D7;
+    --blue-deep: #02569B;
+    --blue-soft: #E5F0FC;
+    --sky: #54C5F8;
+    --dark: #1D1D1F;
+    --mid: #3A3A3C;
+    --muted: #6E6E73;
+    --light: #F5F5F7;
+    --border: #E5E5EA;
+    --code-bg: #1D1D1F;
+    --green: #28A745;
+    --red: #C0392B;
+    --amber: #B07D1A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--mid); background: #FFFFFF; line-height: 1.65; font-size: 16px;
+  }
+  .hero {
+    background: radial-gradient(ellipse 90% 130% at 92% 115%, rgba(84,197,248,0.38), rgba(4,104,215,0.10) 45%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 0% -20%, rgba(4,104,215,0.18), transparent 70%),
+                #10141C;
+    color: #fff; padding: 64px 24px 56px;
+  }
+  .hero-inner { max-width: 860px; margin: 0 auto; }
+  .hero .pill {
+    display: inline-block; border: 1.5px solid rgba(84,197,248,0.55); background: rgba(84,197,248,0.1);
+    color: var(--sky); font-weight: 700; font-size: 13px; letter-spacing: 2px;
+    padding: 8px 20px; border-radius: 999px; margin-bottom: 22px;
+  }
+  .hero h1 { font-size: clamp(32px, 5.5vw, 52px); font-weight: 800; letter-spacing: -1px; color: #fff; }
+  .hero h1 .dt { color: var(--sky); }
+  .hero p.sub { color: #C7C7CC; font-size: 19px; margin-top: 12px; max-width: 700px; }
+  .hero p.meta { color: #8E8E93; font-size: 13.5px; letter-spacing: 1px; margin-top: 28px; text-transform: uppercase; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+  section.chapter { padding-top: 40px; margin-top: 24px; }
+  section.chapter + section.chapter { border-top: 1px solid var(--border); }
+  h2.chap {
+    font-size: 26px; font-weight: 800; color: var(--dark); letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  h2.chap .num {
+    background: var(--blue); color: #fff; font-size: 14px; font-weight: 800;
+    min-width: 40px; height: 40px; border-radius: 10px; display: inline-flex;
+    align-items: center; justify-content: center; flex: 0 0 auto; padding: 0 12px;
+  }
+  h2.chap .num.hw { background: var(--dark); }
+  .dif { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 1px; }
+  h3 { color: var(--dark); font-size: 17px; font-weight: 700; margin: 22px 0 8px; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 10px 0 10px 24px; }
+  li { margin: 6px 0; }
+  strong { color: var(--dark); }
+  code {
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    background: var(--light); border: 1px solid var(--border); border-radius: 5px;
+    padding: 1.5px 6px; font-size: 87%; color: var(--dark);
+  }
+  a { color: var(--blue); font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre.dart {
+    background: var(--code-bg); color: #E5E5EA; border-radius: 12px;
+    padding: 16px 20px; overflow-x: auto; font-size: 13.5px; line-height: 1.6;
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; margin: 12px 0;
+  }
+  pre.dart .k { color: #FF7AB2; font-weight: 600; }
+  pre.dart .s { color: #FF8170; }
+  pre.dart .n { color: #D9C97C; }
+  pre.dart .t { color: #8DD3FF; }
+  pre.dart .c { color: #7F8C98; font-style: italic; }
+  .output {
+    background: var(--light); border: 1px solid var(--border); border-left: 4px solid var(--green);
+    border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 8px 0 14px;
+    font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 13px; color: var(--mid);
+    white-space: pre-wrap;
+  }
+  .output::before { content: "✅ Expected"; display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 1px; color: var(--green); margin-bottom: 4px; text-transform: uppercase; }
+  .box { border-radius: 14px; padding: 16px 20px; margin: 16px 0; }
+  .box .box-title { font-weight: 800; font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .box.idea { background: var(--blue-soft); border: 1px solid #C9DCF0; }
+  .box.idea .box-title { color: var(--blue-deep); }
+  .box.think { background: #FFF9EC; border: 1px solid #F5E3B8; }
+  .box.think .box-title { color: var(--amber); }
+  .box.check { background: #EFF8F0; border: 1px solid #BFE3C6; }
+  .box.check .box-title { color: #1E7B33; }
+  .box.push { background: var(--light); border: 1px dashed #C7C7CC; }
+  .box.push .box-title { color: var(--muted); }
+  .box.plain { background: var(--light); }
+  .box.plain .box-title { color: var(--dark); }
+  .box.stuck { background: #FDF0EF; border: 1px solid #F3C6BC; }
+  .box.stuck .box-title { color: var(--red); }
+  .story {
+    font-size: 15.5px; color: var(--mid); border-left: 3px solid var(--sky);
+    padding: 6px 16px; margin: 12px 0 16px; font-style: italic; background: #FAFCFF;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; }
+  th { background: var(--dark); color: #fff; text-align: left; padding: 9px 13px; font-size: 12.5px; }
+  th:first-child { border-radius: 10px 0 0 0; } th:last-child { border-radius: 0 10px 0 0; }
+  td { border-bottom: 1px solid var(--border); padding: 8px 13px; vertical-align: top; }
+  tr:nth-child(even) td { background: #FAFAFC; }
+  .toc { background: var(--light); border-radius: 16px; padding: 26px 30px; margin: 36px 0; }
+  .toc h2 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { columns: 2; column-gap: 40px; margin-left: 20px; }
+  .toc li { margin: 7px 0; break-inside: avoid; }
+  .toc a { color: var(--dark); font-weight: 600; }
+  .toc a:hover { color: var(--blue); }
+  .toc .mini { color: var(--blue); font-size: 12px; font-weight: 700; }
+  @media (max-width: 640px) { .toc ol { columns: 1; } }
+  .divider-label {
+    text-align: center; margin: 48px 0 8px; font-size: 13px; font-weight: 800;
+    letter-spacing: 3px; color: var(--blue); text-transform: uppercase;
+  }
+  footer { background: var(--dark); color: #98989D; text-align: center; padding: 30px 20px; font-size: 13px; }
+
+  .starter { background: #F0F6FF; border: 2px solid var(--blue); border-radius: 14px; padding: 16px 20px; margin: 16px 0 20px; }
+  .starter .box-title { font-weight: 800; font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue-deep); display: block; margin-bottom: 4px; }
+  .starter p { font-size: 15px; margin: 4px 0 8px; }
+  .rung { border-left: 3px solid var(--blue); padding: 2px 0 2px 18px; margin: 18px 0; }
+  .rung p.rt { margin: 0 0 8px; }
+  .see { background: #EFF8F0; border: 1px solid #BFE3C6; border-radius: 10px; padding: 8px 14px; margin: 8px 0;
+         font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 13px; color: var(--mid); }
+  .see::before { content: "👀 You should see"; display: block; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                 font-size: 10.5px; font-weight: 800; letter-spacing: 1px; color: #1E7B33; text-transform: uppercase; margin-bottom: 3px; }
+  details.hint { background: #FFF9EC; border: 1px solid #F5E3B8; border-radius: 10px; padding: 7px 14px; margin: 6px 0; }
+  details.hint summary { cursor: pointer; font-weight: 700; color: var(--amber); font-size: 14px; }
+  details.hint[open] summary { margin-bottom: 4px; }
+  details.hint p { margin: 4px 0 2px; font-size: 15px; }
+
+  .see.ui { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 15px; }
+  .box.turn { background: #F4F0FF; border: 1px solid #D9CEF7; }
+  .box.turn .box-title { color: #5B3FC4; }
+  .tree { font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 13.5px; background: var(--light);
+          border-radius: 10px; padding: 12px 16px; white-space: pre; overflow-x: auto; color: var(--dark); margin: 10px 0; }
+  .step-lead { font-size: 16.5px; }
+  .see.with-shot { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  .see.with-shot .see-text { flex: 1 1 260px; }
+  .see.with-shot::before { flex-basis: 100%; margin-bottom: -10px; }
+  .box.stuck img.phone { margin-top: 10px; }
+  .see .shots { display: flex; gap: 12px; flex-wrap: wrap; }
+  img.phone { width: 150px; border-radius: 14px; border: 1px solid #C9D8C6; display: block; }
+  .brief { background: var(--light); border-left: 5px solid var(--blue); border-radius: 0 16px 16px 0; padding: 22px 28px; margin: 36px 0; font-size: 17px; }
+</style>
+</head>
+<body>
+<div class="hero"><div class="hero-inner">
+<div class="pill">WEEK 2 · SESSION 3 · ASSIGNMENT</div>
+<h1>Shopping List+: <span class="dt">make it a real app</span></h1>
+<p class="sub">Your app works. Now make it the kind of app people actually keep on their phone: quantities, no duplicates, undo, filters, and a details screen for every item.</p>
+<p class="meta">Due 1:00 AM tonight · submit your GitHub link</p>
+</div></div>
+<div class="wrap">
+<div class="brief"><strong>Start from your finished Shopping List</strong> (all 8 steps of the guide). Six upgrades, one after another. Each has a goal, a check, and hints. This time there is no code to type in: the logic is yours, and you only get the Flutter pieces you have not seen yet.</div>
+<div class="box plain"><span class="box-title">How to work</span><ul>
+<li>One part at a time. Check it on the emulator before you start the next one, then commit.</li>
+<li>Read the goal twice. Every bullet is something your app must do.</li>
+<li>Stuck? Read the error, then the guide's <em>When something goes wrong</em>, then the hints, then a friend.</li>
+<li>Type it yourself and understand it: you must be able to explain any line of your app.</li></ul></div>
+<div class="toc"><h2>The six upgrades</h2><ol>
+<li><a href="#p1">Nothing to show</a></li><li><a href="#p2">How many?</a></li><li><a href="#p3">No duplicates, just more</a></li>
+<li><a href="#p4">Oops: undo</a></li><li><a href="#p5">Show me what's left</a></li><li><a href="#p6">Item details</a></li>
+<li><a href="#submit">Check and submit</a></li></ol></div>
+<section class="chapter" id="p1"><h2 class="chap"><span class="num">1</span> Nothing to show</h2><p class="step-lead">Delete everything and your app shows a blank page. A real app tells the user what is going on.</p><div class="box plain"><span class="box-title">🎯 The goal</span><ul><li>When the list has no items, the page shows <strong>Your list is empty</strong> in the middle, instead of a blank space.</li><li>As soon as an item is added, the list comes back.</li></ul></div><div class="see ui">Delete Milk, Bread and Rice: <strong>Your list is empty</strong> appears. Add <strong>Eggs</strong>: the list is back.</div><details class="hint"><summary>💡 Hint 1</summary><p>What goes inside the <code>Expanded</code> now depends on the data: a message when <code>items</code> is empty, the <code>ListView</code> otherwise.</p></details><details class="hint"><summary>💡 Hint 2</summary><p>You used <code>condition ? a : b</code> in step 8 for the crossed-out text. It works for whole widgets too: <code>items.isEmpty ? Center(...) : ListView.builder(...)</code>.</p></details></section><section class="chapter" id="p2"><h2 class="chap"><span class="num">2</span> How many?</h2><p class="step-lead">Nobody buys "milk". People buy 3 bottles of milk.</p><div class="box plain"><span class="box-title">🎯 The goal</span><ul><li>Every item has a <strong>quantity</strong>, starting at 1, shown on its row between a <strong>−</strong> and a <strong>+</strong> button, before the bin.</li><li><strong>+</strong> adds one. <strong>−</strong> removes one, but the quantity <strong>never goes below 1</strong>. To remove an item completely, there is the bin.</li></ul></div><div class="see ui">Tap + on Milk twice: <strong>3</strong>. Tap − four times: it stops at <strong>1</strong>.</div><details class="hint"><summary>💡 Hint 1</summary><p>The quantity belongs to the item, so it goes in the model: a new field in <code>Item</code>, starting at 1. Then do a <strong>hot restart</strong>. You know why from step 8.</p></details><details class="hint"><summary>💡 Hint 2</summary><p>The row's <code>trailing</code> takes one widget, and you need four (−, the number, +, the bin). Put them in a <code>Row</code>. The icons are <code>Icons.remove</code> and <code>Icons.add</code>.</p></details><details class="hint"><summary>💡 Hint 3</summary><p>"Never below 1" is a rule, like in your labs: check before you change.</p></details><div class="box stuck"><span class="box-title">🆘 Classic trap</span><p><strong>Trailing widget consumes the entire tile width</strong>: a <code>Row</code> takes all the width it can get, which leaves nothing for the name. Tell it to be only as wide as its children: <code>Row(mainAxisSize: MainAxisSize.min, children: [...])</code>.</p></div></section><section class="chapter" id="p3"><h2 class="chap"><span class="num">3</span> No duplicates, just more</h2><p class="step-lead">Typing "milk" when Milk is already there should not give you two rows of milk.</p><div class="box plain"><span class="box-title">🎯 The goal</span><ul><li>Adding an item that is already on the list, <strong>whatever its capitals or spaces</strong> (<code>milk</code>, <code>&nbsp;MILK&nbsp;</code>), does not add a new row.</li><li>Instead, that item's quantity goes up by 1, and a message says <strong>Milk is already on the list: now ×2</strong>.</li><li>A new item is still added as before.</li></ul></div><div class="see ui">Type <code>&nbsp;mILK</code> and tap Add: still three rows, Milk shows <strong>2</strong>, and the message appears.</div><details class="hint"><summary>💡 Hint 1</summary><p>Compare both names in the same case. Lab 4 had the tool for that.</p></details><details class="hint"><summary>💡 Hint 2</summary><p><code>items.where((item) =&gt; ...)</code> gives you the items that match. Then <code>.isNotEmpty</code> tells you if there is one, and <code>.first</code> gives it to you.</p></details></section><section class="chapter" id="p4"><h2 class="chap"><span class="num">4</span> Oops: undo</h2><p class="step-lead">Every good app forgives mistakes. Delete the wrong item, and you get it back.</p><div class="box idea"><span class="box-title">🧠 New Flutter piece: a button inside the message</span><p>A <code>SnackBar</code> can carry one button, called an <em>action</em>:</p><pre class="dart"><span class="t">SnackBar</span>(
+  content: <span class="t">Text</span>(<span class="s">&#x27;Bread removed&#x27;</span>),
+  action: <span class="t">SnackBarAction</span>(
+    label: <span class="s">&#x27;Undo&#x27;</span>,
+    onPressed: () {
+      <span class="c">// what happens when Undo is tapped</span>
+    },
+  ),
+)</pre><p>Before showing a new message, <code>ScaffoldMessenger.of(context).hideCurrentSnackBar();</code> removes the old one, so messages do not queue up.</p></div><div class="box plain"><span class="box-title">🎯 The goal</span><ul><li>Deleting an item shows <strong>Bread removed</strong> with an <strong>Undo</strong> button.</li><li>Undo puts the item back <strong>in exactly the same place</strong>, with its quantity and bought status.</li></ul></div><div class="see ui">Delete Bread, tap Undo: the list is <strong>Milk, Bread, Rice</strong> again, not Milk, Rice, Bread.</div><details class="hint"><summary>💡 Hint 1</summary><p>To put it back in the same place, you must know where it was. Find that out <em>before</em> you remove it.</p></details><details class="hint"><summary>💡 Hint 2</summary><p><code>items.indexOf(item)</code> gives an item's position, and <code>items.insert(position, item)</code> puts it back there. Lab 10 used <code>insert</code>.</p></details></section><section class="chapter" id="p5"><h2 class="chap"><span class="num">5</span> Show me what's left</h2><p class="step-lead">In the shop, you only want to see what you still need to buy.</p><div class="box idea"><span class="box-title">🧠 New Flutter piece: choice chips</span><p>A <code>ChoiceChip</code> is a small button that can be selected. Keep the chosen filter in your State, as <code>String filter = 'All';</code></p><pre class="dart"><span class="t">ChoiceChip</span>(
+  label: <span class="k">const</span> <span class="t">Text</span>(<span class="s">&#x27;All&#x27;</span>),
+  selected: filter == <span class="s">&#x27;All&#x27;</span>,
+  onSelected: (_) {
+    setState(() {
+      filter = <span class="s">&#x27;All&#x27;</span>;
+    });
+  },
+)</pre></div><div class="box plain"><span class="box-title">🎯 The goal</span><ul><li>Three chips under the input row: <strong>All</strong>, <strong>To buy</strong> and <strong>Bought</strong>. The selected one is highlighted.</li><li><strong>All</strong> shows every item, with the bought ones <strong>always at the bottom</strong>. <strong>To buy</strong> shows only items not bought. <strong>Bought</strong> shows only bought items.</li><li>When a filter has nothing to show, the page says <strong>Nothing here</strong>. (Part 1's message stays for a truly empty list.)</li><li>Everything still works in every filter: marking, −, +, delete and undo.</li></ul></div><div class="see ui">Tap Milk to mark it: in <strong>All</strong> it moves to the bottom. <strong>Bought</strong> shows only Milk. Delete it there: <strong>Nothing here</strong>. Undo: Milk is back. <strong>All</strong>: Bread, Rice, Milk.</div><details class="hint"><summary>💡 Hint 1</summary><p>Do not change <code>items</code> to filter it. In <code>build</code>, make a second list, <code>shown</code>, from <code>items</code>, and give <code>shown</code> to the ListView.</p></details><details class="hint"><summary>💡 Hint 2</summary><p><code>items.where(...).toList()</code> makes a filtered list. Two lists join into one with <code>[...first, ...second]</code>: the <code>...</code> spreads a list's items into the new one.</p></details><details class="hint"><summary>💡 Hint 3</summary><p>Look at your delete. <code>index</code> is now a position in <code>shown</code>, not in <code>items</code>. Delete the item itself: <code>items.remove(item)</code>.</p></details><div class="box stuck"><span class="box-title">🆘 Classic trap</span><p><strong>The wrong item gets deleted</strong>, and there is no error message at all: you still remove by <code>index</code>, but with a filter on, row 0 of the screen is not item 0 of your list. The most dangerous bugs are the silent ones. Test every action in every filter.</p></div></section><section class="chapter" id="p6"><h2 class="chap"><span class="num">6</span> Item details</h2><p class="step-lead">Every real app has a second screen. Tap into an item and see everything about it.</p><div class="box idea"><span class="box-title">🧠 New Flutter piece: a second screen</span><p>A new screen is just another widget class. <code>Navigator.push</code> opens it on top, and <code>Navigator.pop(context)</code> goes back. You pass it the item through its constructor, with a named parameter, like <code>HomeScreen(title: ...)</code>:</p><pre class="dart"><span class="t">Navigator</span>.push(
+  context,
+  <span class="t">MaterialPageRoute</span>(builder: (context) =&gt; <span class="t">DetailsScreen</span>(item: item)),
+).then((_) {
+  setState(() {});
+});</pre><p><code>.then(...)</code> runs when the user comes back. The details screen changed the item, so the list must redraw.</p><p>The details screen needs its fields filled with the item's current values when it opens. <code>initState</code> runs once, when a screen first appears:</p><pre class="dart">@override
+<span class="k">void</span> initState() {
+  <span class="k">super</span>.initState();
+  nameController.text = widget.item.name;
+}</pre></div><div class="box plain"><span class="box-title">🎯 The goal</span><ul><li>A <strong>long-press</strong> on an item opens a new screen, <strong>Item details</strong>, with a back arrow at the top.</li><li>It shows the item's <strong>name</strong> and a <strong>note</strong> (for example <em>the 1 litre bottle</em>) in two text fields, and its <strong>category</strong> as three chips: <strong>Food</strong>, <strong>Drinks</strong>, <strong>Home</strong>. New items start as Food with no note.</li><li><strong>Save</strong> keeps the changes and goes back to the list. An empty name is refused with a message, and you stay on the screen.</li><li>The back arrow goes back <strong>without</strong> changing anything.</li><li>On the list, each row shows its category under the name, and the note after it: <strong>Drinks · the 1 litre bottle</strong>.</li></ul></div><div class="see ui">Long-press Rice, rename it <strong>Brown rice</strong>, note <strong>1 kg bag</strong>, category <strong>Home</strong>, Save: the row says Brown rice, with <strong>Home · 1 kg bag</strong> under it. Long-press Milk, change the name, then use the back arrow: still Milk.</div><details class="hint"><summary>💡 Hint 1</summary><p>The item needs two new fields in your model: a note and a category. Hot restart afterwards.</p></details><details class="hint"><summary>💡 Hint 2</summary><p>Make <code>DetailsScreen</code> a <code>StatefulWidget</code> with <code>required this.item</code>, like <code>HomeScreen</code> has <code>required this.title</code>. Its State has two controllers and the chosen category. The chips work exactly like your filter chips from part 5.</p></details><details class="hint"><summary>💡 Hint 3</summary><p>Write the changes into <code>widget.item</code> only when Save is tapped. That is why the back arrow changes nothing.</p></details><div class="box stuck"><span class="box-title">🆘 Classic trap</span><p><strong>'name' can't be used as a setter because it's final</strong>: <code>final</code> means "set once, never changed", and now the name must change. Remove <code>final</code> from <code>name</code> in your <code>Item</code> class.</p></div><div class="box stuck"><span class="box-title">🆘 Classic trap</span><p><strong>You save, go back, and the list still shows the old name</strong>, with no error: the item did change, but nobody told the list to redraw. That is what the <code>.then((_) { setState(() {}); })</code> after <code>Navigator.push</code> is for.</p></div></section><div class="box push"><span class="box-title">⚡ Push further</span><ul><li>Give each item a <strong>price</strong> (a second field when adding) and show the <strong>total still to spend</strong> at the bottom: price × quantity, only for items not bought. Refuse a price that is not a number.</li><li>A button that sorts the list <strong>A to Z</strong>.</li></ul></div><section class="chapter" id="submit"><h2 class="chap"><span class="num hw">✔</span> Check and submit</h2><div class="box check"><span class="box-title">✔ Your app is finished when</span><ul><li>An empty list says <em>Your list is empty</em>.</li><li>Every item has − quantity +, and the quantity never goes below 1.</li><li>Adding <code>milk</code> when Milk exists raises its quantity instead of adding a row.</li><li>Deleting shows Undo, and Undo puts the item back in the same place.</li><li>All / To buy / Bought work, bought items sit at the bottom of All, and every action works in every filter.</li><li>A long-press opens Item details: Save keeps the name, note and category, an empty name is refused, and the back arrow changes nothing.</li></ul></div><div class="box think"><span class="box-title">🤔 Think</span><p>Answer these in your README, under a heading <strong>Think</strong>:</p><p>1. In part 5, why does deleting by <code>index</code> remove the wrong item when a filter is on? How did you fix it?</p><p>2. Why did you have to remove <code>final</code> from <code>name</code>? Why is <code>final</code> still a good choice for most fields?</p><p>3. Why did you need a hot restart after adding <code>quantity</code> to <code>Item</code>, when a save was enough for everything else?</p><p>4. The details screen changed the item, but the list only showed it after <code>setState</code> in <code>.then</code>. Why? What does this tell you about how Flutter decides when to redraw?</p></div><div class="box plain"><span class="box-title">📤 Submit</span><ol><li>Work in the <strong>same</strong> <code>shopping_list</code> project and repository. <strong>Commit after each part</strong>, for example <code>git commit -m "Part 4: undo"</code>: your history shows your work.</li><li>Update your <strong>README</strong>: a <strong>Features</strong> list of the six upgrades, your <strong>Think</strong> answers, and screenshots of the quantities, the Undo message, the Bought filter and the Item details screen (in your <code>screenshots</code> folder).</li><li>Push, open the repository in your browser and check the screenshots appear.</li><li>Submit your repository link here: <a href="https://forms.gle/h6DskaMHPvzdD2kD7">https://forms.gle/h6DskaMHPvzdD2kD7</a>. Already submitted it? Your link stays the same: just push.</li></ol><p><strong>Deadline: 1:00 AM tonight.</strong> Commits after the deadline are not marked.</p></div></section>
+</div>
+<footer>Mobile Programming · Week 2 · Shopping List+</footer>
+</body></html>
