@@ -26,9 +26,20 @@ class ShoppingListScreen extends StatefulWidget {
   State<ShoppingListScreen> createState() => _ShoppingListScreenState();
 }
 
+class Item {
+  String name;
+  bool bought;
+
+  Item({required this.name, this.bought = false});
+}
+
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
   final TextEditingController _textController = TextEditingController();
-  final List<String> _items = ['Milk', 'Bread', 'Rice'];
+  final List<Item> _items = [
+    Item(name: 'Milk'),
+    Item(name: 'Bread'),
+    Item(name: 'Rice'),
+  ];
 
   @override
   void dispose() {
@@ -40,7 +51,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     final text = _textController.text;
     if (text.isNotEmpty) {
       setState(() {
-        _items.add(text);
+        _items.add(Item(name: text));
         _textController.clear();
       });
     }
@@ -49,6 +60,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   void _deleteItem(int index) {
     setState(() {
       _items.removeAt(index);
+    });
+  }
+
+  void _toggleBought(int index) {
+    setState(() {
+      _items[index].bought = !_items[index].bought;
     });
   }
 
@@ -86,8 +103,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             child: ListView.builder(
               itemCount: _items.length,
               itemBuilder: (context, index) {
+                final item = _items[index];
                 return ListTile(
-                  title: Text(_items[index]),
+                  leading: Checkbox(
+                    value: item.bought,
+                    onChanged: (_) => _toggleBought(index),
+                  ),
+                  title: Text(
+                    item.name,
+                    style: TextStyle(
+                      decoration: item.bought
+                          ? TextDecoration.lineThrough
+                          : null,
+                      color: item.bought ? Colors.grey : null,
+                    ),
+                  ),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => _deleteItem(index),
