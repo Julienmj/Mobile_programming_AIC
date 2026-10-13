@@ -70,9 +70,26 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   void _deleteItem(int index) {
+    final item = _items[index];
+    final position = index;
     setState(() {
       _items.removeAt(index);
     });
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${item.name} removed'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _items.insert(position, item);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   void _toggleBought(int index) {
