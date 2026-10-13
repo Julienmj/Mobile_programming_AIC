@@ -49,13 +49,24 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   void _addItem() {
-    final text = _textController.text;
-    if (text.isNotEmpty) {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
+    final existingItem = _items.firstWhere(
+      (item) => item.name.toLowerCase() == text.toLowerCase(),
+      orElse: () => Item(name: ''),
+    );
+
+    if (existingItem.name.isNotEmpty) {
+      setState(() {
+        existingItem.quantity++;
+      });
+    } else {
       setState(() {
         _items.add(Item(name: text));
-        _textController.clear();
       });
     }
+    _textController.clear();
   }
 
   void _deleteItem(int index) {
