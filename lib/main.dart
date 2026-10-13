@@ -29,8 +29,9 @@ class ShoppingListScreen extends StatefulWidget {
 class Item {
   String name;
   bool bought;
+  int quantity;
 
-  Item({required this.name, this.bought = false});
+  Item({required this.name, this.bought = false, this.quantity = 1});
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
@@ -67,6 +68,20 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     setState(() {
       _items[index].bought = !_items[index].bought;
     });
+  }
+
+  void _incrementQuantity(int index) {
+    setState(() {
+      _items[index].quantity++;
+    });
+  }
+
+  void _decrementQuantity(int index) {
+    if (_items[index].quantity > 1) {
+      setState(() {
+        _items[index].quantity--;
+      });
+    }
   }
 
   @override
@@ -125,9 +140,23 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                             color: item.bought ? Colors.grey : null,
                           ),
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _deleteItem(index),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () => _decrementQuantity(index),
+                            ),
+                            Text('${item.quantity}'),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () => _incrementQuantity(index),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _deleteItem(index),
+                            ),
+                          ],
                         ),
                       );
                     },
